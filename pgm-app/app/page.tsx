@@ -1,3 +1,5 @@
+import MapEmbed from "@/components/MapEmbed";
+
 export default function Home() {
   return (
     <div className="flex h-screen w-full flex-col">
@@ -47,7 +49,7 @@ export default function Home() {
 
         {/* Right Side - Map Area */}
         <div className="flex flex-1 items-center justify-center bg-gray-100">
-          <span className="text-3xl text-gray-400">Map</span>
+        <MapEmbed query="Empire State Building, New York" />
         </div>
       </div>
     </div>
