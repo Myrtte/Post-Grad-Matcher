@@ -1,6 +1,11 @@
+"use client";
+
 import MapEmbed from "@/components/MapEmbed";
+import { useState } from "react";
 
 export default function Home() {
+  const [query, setQuery] = useState("Los Angeles");
+
   return (
     <div className="flex h-screen w-full flex-col">
       {/* Top Navigation Bar */}
@@ -27,6 +32,8 @@ export default function Home() {
               type="text"
               placeholder="Enter zip code or city"
               className="w-full rounded-lg border border-gray-300 px-4 py-2"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
           </div>
 
@@ -49,7 +56,7 @@ export default function Home() {
 
         {/* Right Side - Map Area */}
         <div className="flex flex-1 items-center justify-center bg-gray-100">
-        <MapEmbed query="Empire State Building, New York" />
+          <MapEmbed query={query} />
         </div>
       </div>
     </div>
