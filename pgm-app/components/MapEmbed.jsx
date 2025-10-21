@@ -4,7 +4,7 @@ export default function MapEmbed({ query = "New York University" }) {
   const src = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(query)}`;
 
   return (
-    <div className="w-full h-[400px]">
+    <div className="w-full h-full">
       <iframe
         width="100%"
         height="100%"

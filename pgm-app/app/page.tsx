@@ -55,7 +55,7 @@ export default function Home() {
         </div>
 
         {/* Right Side - Map Area */}
-        <div className="flex flex-1 items-center justify-center bg-gray-100">
+        <div className="flex-1 bg-gray-100">
           <MapEmbed query={query} />
         </div>
       </div>
