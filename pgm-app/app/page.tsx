@@ -1,3 +1,5 @@
+import MapComponent from "./components/MapComponent";
+
 export default function Home() {
   return (
     <div className="flex h-screen w-full flex-col">
@@ -46,8 +48,8 @@ export default function Home() {
         </div>
 
         {/* Right Side - Map Area */}
-        <div className="flex flex-1 items-center justify-center bg-gray-100">
-          <span className="text-3xl text-gray-400">Map</span>
+        <div className="flex flex-1 bg-gray-100">
+          <MapComponent />
         </div>
       </div>
     </div>
