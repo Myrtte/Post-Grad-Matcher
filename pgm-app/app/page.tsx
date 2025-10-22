@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="flex h-screen w-full flex-col">
@@ -8,9 +10,9 @@ export default function Home() {
         {/* Links to future pages */}
         <div className="flex items-center gap-6">
           <a href="#" className="text-gray-700 hover:text-gray-900">Home</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900">Post</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900">Messages</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900">Help</a>
+          <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
+          <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
+          <Link href="/help_p" className="text-gray-700 hover:text-gray-900">Help</Link>
           <div className="h-10 w-10 rounded-full bg-gray-400"></div>
         </div>
       </nav>
