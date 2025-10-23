@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
 import { db } from "@/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
@@ -62,17 +61,17 @@ export default function PostPage() {
   };
 
   return (
-    <div className="flex h-screen w-full flex-col">
+    <div className="flex h-screen w-full flex-col bg-pastel-light">
       <Navbar selectedPage={"Post"}/>
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="mx-auto max-w-2xl">
-          <h2 className="mb-6 text-2xl font-bold">Create a New Listing</h2>
+          <h2 className="my-6 text-2xl font-bold text-gray-800 text-center">Create a New Listing</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="title" className="block text font-medium text-gray-700">
                 Listing Title
               </label>
               <input
@@ -81,13 +80,13 @@ export default function PostPage() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 block w-full border border-gray-700 bg-white px-3 py-2 shadow-sm focus:outline-none transition-colors rounded-sm"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="location" className="block text font-medium text-gray-700">
                 Location
               </label>
               <input
@@ -96,14 +95,14 @@ export default function PostPage() {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 block w-full border border-gray-700 bg-white px-3 py-2 shadow-sm focus:outline-none transition-colors rounded-sm"
                 required
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="price" className="block text font-medium text-gray-700">
                   Monthly Rent ($)
                 </label>
                 <input
@@ -112,13 +111,13 @@ export default function PostPage() {
                   name="price"
                   value={formData.price}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                  className="mt-1 block w-full border border-gray-700 bg-white px-3 py-2 shadow-sm focus:outline-none transition-colors rounded-sm"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="bedrooms" className="block text font-medium text-gray-700">
                   Bedrooms
                 </label>
                 <input
@@ -127,13 +126,13 @@ export default function PostPage() {
                   name="bedrooms"
                   value={formData.bedrooms}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                  className="mt-1 block w-full border border-gray-700 bg-white px-3 py-2 shadow-sm focus:outline-none transition-colors rounded-sm"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="bathrooms" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="bathrooms" className="block text font-medium text-gray-700">
                   Bathrooms
                 </label>
                 <input
@@ -142,14 +141,14 @@ export default function PostPage() {
                   name="bathrooms"
                   value={formData.bathrooms}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                  className="mt-1 block w-full border border-gray-700 bg-white px-3 py-2 shadow-sm focus:outline-none transition-colors rounded-sm"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="description" className="block text font-medium text-gray-700">
                 Description
               </label>
               <textarea
@@ -158,13 +157,13 @@ export default function PostPage() {
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 block w-full border border-gray-700 bg-white px-3 py-2 shadow-sm focus:outline-none transition-colors rounded-sm"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="contactInfo" className="block text font-medium text-gray-700">
                 Contact Information
               </label>
               <input
@@ -173,17 +172,24 @@ export default function PostPage() {
                 name="contactInfo"
                 value={formData.contactInfo}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 block w-full border border-gray-700 bg-white px-3 py-2 shadow-sm focus:outline-none transition-colors rounded-sm"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              disabled={submitting}
+              className="w-full bg-blue-500/90 px-4 py-3 text-blacks font-bold rounded-sm hover:bg-blue-500 focus:outline-none transition-colors disabled:opacity-50"
             >
-              Create Listing
+              {submitting ? "Creating..." : "Create Listing"}
             </button>
+
+            {successMsg && (
+              <div className="mb-4 text-green-700 px-4 py-3 font-semibold rounded-sm text-center">
+                {successMsg}
+              </div>
+            )}
           </form>
         </div>
       </div>
