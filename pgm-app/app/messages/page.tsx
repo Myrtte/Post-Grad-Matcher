@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { db } from "@/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+
 export default function MessagesPage() {
   const [selectedChat, setSelectedChat] = useState<number | null>(null);
   const [message, setMessage] = useState("");

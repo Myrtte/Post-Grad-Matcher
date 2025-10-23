@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { db } from "@/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+
 export default function PostPage() {
   const [formData, setFormData] = useState({
     title: "",
@@ -14,10 +17,39 @@ export default function PostPage() {
     contactInfo: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement form submission to Firebase
-    console.log("Form data:", formData);
+    setSubmitting(true);
+    setSuccessMsg(null);
+  
+    const price = Number(formData.price);
+    const bedrooms = Number(formData.bedrooms);
+    const bathrooms = Number(formData.bathrooms);
+
+    await addDoc(collection(db, "listings"), {
+        title: formData.title.trim(),
+        location: formData.location.trim(),
+        price: isNaN(price) ? 0 : price,
+        bedrooms: isNaN(bedrooms) ? 0 : bedrooms,
+        bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
+        description: formData.description.trim(),
+        contactInfo: formData.contactInfo.trim(),
+        createdAt: serverTimestamp(),
+      });
+
+      setSuccessMsg("Listing created!");
+      setFormData({
+        title: "",
+        location: "",
+        price: "",
+        bedrooms: "",
+        bathrooms: "",
+        description: "",
+        contactInfo: "",
+      });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
