@@ -36,7 +36,7 @@ export default function PostPage() {
         <div className="flex items-center gap-6">
           <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
           <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
-          <Link href="#" className="text-gray-700 hover:text-gray-900">Messages</Link>
+          <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
           <Link href="#" className="text-gray-700 hover:text-gray-900">Help</Link>
           <div className="h-10 w-10 rounded-full bg-gray-400"></div>
         </div>
