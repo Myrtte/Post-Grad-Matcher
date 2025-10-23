@@ -9,6 +9,7 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 export default function MessagesPage() {
   const [selectedChat, setSelectedChat] = useState<number | null>(null);
   const [message, setMessage] = useState("");
+  const [sentMessage, setSentMessage] = useState(false);
 
   // Dummy data for chat list
   const chats = [
@@ -17,11 +18,22 @@ export default function MessagesPage() {
     { id: 3, name: "Mike Johnson", lastMessage: "Thanks for the information!", time: "Yesterday" },
   ];
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement sending message functionality with Firebase
-    console.log("Sending message:", message);
+    if (!selectedChat || !message.trim()) return;
+
+    const chat = chats.find(chat => chat.id === selectedChat);
+
+    await addDoc(collection(db, "messages"), {
+      chatId: selectedChat,
+      chatName: chat?.name ?? null,
+      message: message.trim(),
+      createdAt: serverTimestamp(),
+    });
+
     setMessage("");
+    setSentMessage(true);
+    setTimeout(() => setSentMessage(false), 1200);
   };
 
   return (
