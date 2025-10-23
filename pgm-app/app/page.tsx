@@ -3,6 +3,7 @@
 import MapEmbed from "@/components/MapEmbed";
 import { useState } from "react";
 import FirebaseTest from "../components/FirebaseTest.jsx";
+import Link from "next/link";
 
 export default function Home() {
   const [query, setQuery] = useState("Los Angeles");
@@ -14,12 +15,12 @@ export default function Home() {
       <nav className="flex items-center justify-between border-b border-gray-300 bg-white px-6 py-4">
         <h1 className="text-2xl font-bold">Post-Grad Matcher</h1>
 
-        {/* Links to future pages */}
+        {/* Navigation Links */}
         <div className="flex items-center gap-6">
-          <a href="#" className="text-gray-700 hover:text-gray-900">Home</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900">Post</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900">Messages</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900">Help</a>
+          <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
+          <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
+          <Link href="#" className="text-gray-700 hover:text-gray-900">Messages</Link>
+          <Link href="#" className="text-gray-700 hover:text-gray-900">Help</Link>
           <div className="h-10 w-10 rounded-full bg-gray-400"></div>
         </div>
       </nav>
