@@ -4,11 +4,15 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --pastel: #fdffe8;
+  --pastel-light: #fefff2;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-pastel: var(--pastel);
+  --color-pastel-light: var(--pastel-light);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-fira-code);
 }
