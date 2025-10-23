@@ -1,15 +1,52 @@
 "use client";
 
 import MapEmbed from "@/components/MapEmbed";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FirebaseTest from "../components/FirebaseTest.jsx";
 import Link from "next/link";
 import profileIcon from "../public/PGM Icon.png"
 import Image from "next/image.js";
+import { db } from "@/firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
+
+interface Listing {
+  id: string;
+  title: string;
+  location: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  description: string;
+  contactInfo: string;
+  createdAt: any;
+}
 
 export default function Home() {
   const [query, setQuery] = useState("USA");
   const [showFirebaseTest, setShowFirebaseTest] = useState(false);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch listings from Firebase
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const listingsRef = collection(db, "listings");
+        const snapshot = await getDocs(listingsRef);
+        const listingsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Listing[];
+        setListings(listingsData);
+      } catch (error) {
+        console.error("Error fetching listings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListings();
+  }, []);
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -76,19 +113,25 @@ export default function Home() {
 
           {/* Scrollable Listings */}
           <div className="overflow-y-auto" style={{ height: 'calc(100vh - 200px)' }}>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="border-b border-gray-200 bg-pastel p-4 hover:bg-pastel-light">
-                <h3 className="font-semibold">Roommate Listing {i}</h3>
-                <p className="text-sm text-gray-600 mt-1">2 bed, 1 bath • $1,200/mo</p>
-                <p className="text-sm text-gray-500 mt-1">0.{i} miles away</p>
-              </div>
-            ))}
+            {loading ? (
+              <div className="p-4 text-center text-gray-500">Loading listings...</div>
+            ) : listings.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">No listings found</div>
+            ) : (
+              listings.map((listing) => (
+                <div key={listing.id} className="border-b border-gray-200 bg-pastel p-4 hover:bg-pastel-light">
+                  <h3 className="font-semibold">{listing.title}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{listing.bedrooms} bed, {listing.bathrooms} bath • ${listing.price}/mo</p>
+                  <p className="text-sm text-gray-500 mt-1">{listing.location}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
         {/* Right Side - Map Area */}
         <div className="flex-1 bg-gray-100">
-          <MapEmbed query={query} />
+          <MapEmbed query={query} listings={listings} />
         </div>
       </div>
     </div>
