@@ -18,7 +18,8 @@ export default function FAQs() {
             <h1 className="text-2xl font-bold">Made it</h1>
             <div className="flex items-center gap-6">
             <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-            <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
+            <Link href="/post" className="text-gray-700 hover:text-gray-900">Make a Post</Link>
+            <Link href="#" className="text-gray-700 hover:text-gray-900">My Posts</Link>
             <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
             <Link href="/help_tab" className="text-gray-700 hover:text-gray-900">Help</Link>
             <Image 
