@@ -45,7 +45,7 @@ export default function Home() {
               {query === "USA" ? "Listings Near" : `Listings Near`}
             </h2>
             <h3 className="text-base font-semibold text-gray-700 mb-3">
-              {query === "USA" ? "New York, New York" : formatQuery(query)}
+              {query ? formatQuery(query) : ""}
             </h3>
             <input
               type="text"
@@ -104,7 +104,7 @@ export default function Home() {
 
         {/* Right Side - Map Area */}
         <div className="flex-1 bg-[#e8dfc8] relative">
-          <MapEmbed query={query} />
+          <MapEmbed query={query ? query : "USA"} />
         </div>
       </div>
     </div>
