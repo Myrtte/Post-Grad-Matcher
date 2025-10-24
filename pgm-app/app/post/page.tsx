@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 export default function PostPage() {
   const [formData, setFormData] = useState({
     title: "",
+    name: "",
     address: "",
     city: "",
     state: "",
@@ -56,6 +57,7 @@ export default function PostPage() {
 
     await addDoc(collection(db, "listings"), {
         title: formData.title.trim(),
+        name: formData.name.trim(),
         address: formData.address.trim(),
         city: formData.city.trim(),
         state: formData.state.trim(),
@@ -74,6 +76,7 @@ export default function PostPage() {
       setSuccessMsg("Listing created!");
       setFormData({
         title: "",
+        name: "",
         address: "",
         city: "",
         state: "",
@@ -172,6 +175,19 @@ export default function PostPage() {
                   type="text"
                   name="title"
                   value={formData.title}
+                  onChange={handleChange}
+                  className="w-full border-b-2 border-gray-700 bg-transparent py-2 outline-none"
+                  required
+                />
+              </div>
+
+              {/* Name */}
+              <div className="flex items-baseline space-x-3 px-2">
+                <label className="text-xl font-bold text-gray-800">Name: </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   className="w-full border-b-2 border-gray-700 bg-transparent py-2 outline-none"
                   required
