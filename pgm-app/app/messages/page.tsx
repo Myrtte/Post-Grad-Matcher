@@ -1,22 +1,148 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 import { db } from "@/firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, getDocs, doc, setDoc, getDoc, deleteDoc, query, where } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 
 export default function MessagesPage() {
+  const searchParams = useSearchParams();
   const [selectedChat, setSelectedChat] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [sentMessage, setSentMessage] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{[key: number]: Array<{text: string, isUser: boolean, timestamp: string}>}>({});
 
-  // Dummy data for chat list
-  const chats = [
-    { id: 1, name: "John Doe", lastMessage: "Is the room still available?", time: "2:30 PM" },
-    { id: 2, name: "Jane Smith", lastMessage: "When can I view the apartment?", time: "1:15 PM" },
-    { id: 3, name: "Mike Johnson", lastMessage: "Thanks for the information!", time: "Yesterday" },
-  ];
+  const [chats, setChats] = useState<Array<{id: number, name: string, lastMessage: string, time: string}>>([]);
+  const [chatsLoaded, setChatsLoaded] = useState(false);
+
+  const loadChats = async () => {
+    try {
+      const chatsDoc = await getDoc(doc(db, "userData", "chats"));
+      if (chatsDoc.exists()) {
+        setChats(chatsDoc.data().chatList || []);
+      }
+      setChatsLoaded(true);
+    } catch (error) {
+      console.error("Error loading chats:", error);
+      setChatsLoaded(true);
+    }
+  };
+
+  const loadMessages = async () => {
+    try {
+      const messagesSnapshot = await getDocs(collection(db, "messages"));
+      const messagesByChat: {[key: number]: Array<{text: string, isUser: boolean, timestamp: string, createdAt: any}>} = {};
+      
+      messagesSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const chatId = data.chatId;
+        
+        if (chatId) {
+          if (!messagesByChat[chatId]) {
+            messagesByChat[chatId] = [];
+          }
+          
+          messagesByChat[chatId].push({
+            text: data.message,
+            isUser: !data.isAutoReply,
+            timestamp: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            createdAt: data.createdAt
+          });
+        }
+      });
+      
+      Object.keys(messagesByChat).forEach(chatId => {
+        messagesByChat[parseInt(chatId)].sort((a, b) => {
+          if (a.createdAt && b.createdAt) {
+            return a.createdAt.seconds - b.createdAt.seconds;
+          }
+          return 0;
+        });
+      });
+      
+      setChatMessages(messagesByChat);
+    } catch (error) {
+      console.error("Error loading messages:", error);
+    }
+  };
+
+  const saveChats = async (updatedChats: Array<{id: number, name: string, lastMessage: string, time: string}>) => {
+    try {
+      await setDoc(doc(db, "userData", "chats"), {
+        chatList: updatedChats
+      });
+    } catch (error) {
+      console.error("Error saving chats:", error);
+    }
+  };
+
+  const deleteChat = async (chatId: number) => {
+    try {
+      // Delete all messages for this chat from Firebase
+      const messagesSnapshot = await getDocs(query(collection(db, "messages"), where("chatId", "==", chatId)));
+      const deletePromises = messagesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+
+      // Remove chat from local state
+      const updatedChats = chats.filter(chat => chat.id !== chatId);
+      setChats(updatedChats);
+      saveChats(updatedChats);
+
+      // Clear messages for this chat from local state
+      setChatMessages(prev => {
+        const updated = { ...prev };
+        delete updated[chatId];
+        return updated;
+      });
+
+      // If the deleted chat was selected, clear the selection
+      if (selectedChat === chatId) {
+        setSelectedChat(null);
+      }
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadChats();
+    loadMessages();
+  }, []);
+
+  useEffect(() => {
+    if (!chatsLoaded) return;
+    
+    const chatId = searchParams.get('chat');
+    const name = searchParams.get('name');
+    
+    if (chatId && name) {
+      const chatIdNum = parseInt(chatId);
+      
+      setChats(currentChats => {
+        const existingChat = currentChats.find(chat => chat.id === chatIdNum);
+        
+        if (!existingChat) {
+          const newChat = {
+            id: chatIdNum,
+            name: name,
+            lastMessage: "New conversation",
+            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+          };
+          
+          const updatedChats = [newChat, ...currentChats];
+          saveChats(updatedChats);
+          return updatedChats;
+        }
+        
+        return currentChats;
+      });
+      
+      setSelectedChat(chatIdNum);
+    }
+  }, [searchParams, chatsLoaded]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,9 +157,40 @@ export default function MessagesPage() {
       createdAt: serverTimestamp(),
     });
 
+
     setMessage("");
     setSentMessage(true);
     setTimeout(() => setSentMessage(false), 1200);
+
+    setTimeout(() => loadMessages(), 100);
+
+    const updatedChats = chats.map(chat => 
+      chat.id === selectedChat 
+        ? { ...chat, lastMessage: message.trim(), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+        : chat
+    );
+    setChats(updatedChats);
+    saveChats(updatedChats);
+
+    setTimeout(async () => {
+      await addDoc(collection(db, "messages"), {
+        chatId: selectedChat,
+        chatName: chat?.name ?? null,
+        message: "Example response",
+        createdAt: serverTimestamp(),
+        isAutoReply: true,
+      });
+      
+      loadMessages();
+      
+      const updatedChatsAfterReply = chats.map(chat => 
+        chat.id === selectedChat 
+          ? { ...chat, lastMessage: "Example response", time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+          : chat
+      );
+      setChats(updatedChatsAfterReply);
+      saveChats(updatedChatsAfterReply);
+    }, 2000);
   };
 
   return (
@@ -55,16 +212,30 @@ export default function MessagesPage() {
             {chats.map((chat) => (
               <div
                 key={chat.id}
-                onClick={() => setSelectedChat(chat.id)}
-                className={`cursor-pointer border-b-2 border-gray-300 p-4 hover:bg-pastel-hover transition-colors
+                className={`border-b-2 border-gray-300 p-4 hover:bg-pastel-hover transition-colors
                     ${selectedChat === chat.id ? 'bg-pastel-light border-l-4 border-l-blue-500/90' : 'bg-pasel-light'}`}
               >
                 <div className="flex items-start justify-between">
-                  <div>
+                  <div 
+                    onClick={() => setSelectedChat(chat.id)}
+                    className="flex-1 cursor-pointer"
+                  >
                     <h3 className="font-semibold">{chat.name}</h3>
                     <p className="text-sm text-gray-600">{chat.lastMessage}</p>
                   </div>
-                  <span className="text-xs text-gray-500">{chat.time}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">{chat.time}</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteChat(chat.id);
+                      }}
+                      className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-100 transition-colors"
+                      title="Delete conversation"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -77,23 +248,25 @@ export default function MessagesPage() {
             {/* Chat Header */}
             <div className="border-b-2 border-gray-700 bg-pastel p-4">
               <h2 className="font-semibold">
-                {chats.find(chat => chat.id === selectedChat)?.name}
+                {chats.find(chat => chat.id === selectedChat)?.name || searchParams.get('name')}
               </h2>
             </div>
 
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4">
-              {/* Add message bubbles here */}
-              <div className="mb-4 flex justify-end">
-                <div className="max-w-xs rounded-lg bg-blue-500/90 px-4 py-2 text-white">
-                  Hello! I'm interested in your listing.
+              {selectedChat && chatMessages[selectedChat] && chatMessages[selectedChat].length > 0 ? (
+                chatMessages[selectedChat].map((msg, index) => (
+                  <div key={index} className={`mb-4 flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-xs rounded-lg px-4 py-2 ${msg.isUser ? 'bg-blue-500/90 text-white' : 'bg-gray-300/90'}`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))
+              ) : selectedChat ? (
+                <div className="text-center text-gray-500 mt-8">
+                  Start a conversation by typing a message below
                 </div>
-              </div>
-              <div className="mb-4 flex justify-start">
-                <div className="max-w-xs rounded-lg bg-gray-300/90 px-4 py-2">
-                  Hi! Yes, it's still available. Would you like to schedule a viewing?
-                </div>
-              </div>
+              ) : null}
             </div>
 
             {/* Message Input */}
