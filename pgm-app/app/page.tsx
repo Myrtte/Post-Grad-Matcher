@@ -94,7 +94,7 @@ export default function Home() {
                     )}
                     <button 
                       onClick={() => {
-                        window.location.href = `/messages?chat=${listing.id + 100}&name=${encodeURIComponent(listing.name)}`;
+                        window.location.href = `/messages?chat=${listing.id}&name=${encodeURIComponent(listing.name)}`;
                       }}
                       className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm"
                     >
