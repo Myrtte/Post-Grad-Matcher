@@ -11,6 +11,7 @@ import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestor
 type ListingDoc = {
   id: string;
   title: string;
+  name?: string;
   address: string;
   city: string;
   state: string;
@@ -29,32 +30,31 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(
-      collection(db, "listings"),
-      orderBy("createdAt", "desc"),
-      limit(50)
-    );
-
-    const unsubscribe = onSnapshot(q, (snap) => {
-      const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() as any })) as ListingDoc[];
-      setListings(docs);
+    if (!db) {
+      console.error("Firebase database not initialized");
       setLoading(false);
-    });
+      return;
+    }
 
-    return () => unsubscribe();
+    try {
+      const q = query(
+        collection(db, "listings"),
+        orderBy("createdAt", "desc"),
+        limit(50)
+      );
+
+      const unsubscribe = onSnapshot(q, (snap) => {
+        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() as any })) as ListingDoc[];
+        setListings(docs);
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Error setting up Firebase listener:", error);
+      setLoading(false);
+    }
   }, []);
-
-  // Mock data for listings
-  // const listings = [
-    // { id: 1, name: "Sammy W.", beds: 2, baths: 2, location: "Brooklyn, NY", price: 1200, distance: 0.1, hasPhoto: true, tags: [] },
-    // { id: 2, name: "Tom D.", beds: 3, baths: 2, location: "Manhattan, NY", price: 1500, distance: 0.2, hasPhoto: true, tags: [] },
-    // { id: 3, name: "Julia B.", beds: 2, baths: 1, location: "Times Square", price: 1350, distance: 0.3, hasPhoto: true, tags: ["Studio"] },
-    // { id: 4, name: "Brian B.", beds: 2, baths: 2, location: "Manhattan, NY", price: 1400, distance: 0.4, hasPhoto: true, tags: ["Dog ⭐"] },
-    // { id: 5, name: "Sarah K.", beds: 1, baths: 1, location: "Queens, NY", price: 950, distance: 0.5, hasPhoto: true, tags: [] },
-    // { id: 6, name: "Mike R.", beds: 3, baths: 2, location: "Bronx, NY", price: 1100, distance: 0.6, hasPhoto: true, tags: [] },
-    // { id: 7, name: "Emma L.", beds: 2, baths: 1, location: "Staten Island, NY", price: 1050, distance: 0.7, hasPhoto: true, tags: ["Cat"] },
-    // { id: 8, name: "Chris P.", beds: 2, baths: 1, location: "Brooklyn, NY", price: 1250, distance: 0.8, hasPhoto: true, tags: [] },
-  // ];
 
   const formatQuery = (q: string) => {
     if(q === "USA") return "New York, New York";
@@ -122,16 +122,16 @@ export default function Home() {
                       {listing.bedrooms} bed, {listing.bathrooms} bath
                     </p>
                     <p className="text-sm text-gray-600 mb-1">
-                      {listing.location}
+                      {listing.city}, {listing.state} {listing.zipcode}
                     </p>
-                    {listing.tags.length > 0 && (
-                      <p className="text-sm text-red-600 font-medium mb-1">
-                        {listing.tags.join(", ")}
-                      </p>
-                    )}
+                    <p className="text-sm text-green-600 font-medium mb-1">
+                      ${listing.price}/month
+                    </p>
                     <button 
                       onClick={() => {
-                        window.location.href = `/messages?chat=${listing.id}&name=${encodeURIComponent(listing.name)}`;
+                        const chatId = parseInt(listing.id.replace(/\D/g, '')) + 100;
+                        const contactName = listing.name || listing.title;
+                        window.location.href = `/messages?chat=${chatId}&name=${encodeURIComponent(contactName)}`;
                       }}
                       className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm"
                     >
@@ -140,7 +140,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
             ))}
           </div>
         </div>

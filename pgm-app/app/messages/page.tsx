@@ -149,29 +149,34 @@ export default function MessagesPage() {
     if (!selectedChat || !message.trim()) return;
 
     const chat = chats.find(chat => chat.id === selectedChat);
+    const messageText = message.trim();
 
     await addDoc(collection(db, "messages"), {
       chatId: selectedChat,
       chatName: chat?.name ?? null,
-      message: message.trim(),
+      message: messageText,
       createdAt: serverTimestamp(),
     });
-
 
     setMessage("");
     setSentMessage(true);
     setTimeout(() => setSentMessage(false), 1200);
 
+    // Update chat list with user message
+    setChats(currentChats => {
+      const updatedChats = currentChats.map(chat => 
+        chat.id === selectedChat 
+          ? { ...chat, lastMessage: messageText, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+          : chat
+      );
+      saveChats(updatedChats);
+      return updatedChats;
+    });
+
+    // Reload messages to show the new message
     setTimeout(() => loadMessages(), 100);
 
-    const updatedChats = chats.map(chat => 
-      chat.id === selectedChat 
-        ? { ...chat, lastMessage: message.trim(), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
-        : chat
-    );
-    setChats(updatedChats);
-    saveChats(updatedChats);
-
+    // Auto-reply after 2 seconds
     setTimeout(async () => {
       await addDoc(collection(db, "messages"), {
         chatId: selectedChat,
@@ -181,15 +186,19 @@ export default function MessagesPage() {
         isAutoReply: true,
       });
       
-      loadMessages();
+      // Update chat list with auto-reply
+      setChats(currentChats => {
+        const updatedChats = currentChats.map(chat => 
+          chat.id === selectedChat 
+            ? { ...chat, lastMessage: "Example response", time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+            : chat
+        );
+        saveChats(updatedChats);
+        return updatedChats;
+      });
       
-      const updatedChatsAfterReply = chats.map(chat => 
-        chat.id === selectedChat 
-          ? { ...chat, lastMessage: "Example response", time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
-          : chat
-      );
-      setChats(updatedChatsAfterReply);
-      saveChats(updatedChatsAfterReply);
+      // Reload messages to show the auto-reply
+      loadMessages();
     }, 2000);
   };
 
