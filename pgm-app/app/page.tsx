@@ -20,7 +20,7 @@ export default function Home() {
   ];
 
   const formatQuery = (q: string) => {
-    if(q === "USA") return "New York, New York"; // Temp for mock data
+    if(q === "USA") return "New York, New York";
 
     return q
       .split(" ")
@@ -92,7 +92,12 @@ export default function Home() {
                         {listing.tags.join(", ")}
                       </p>
                     )}
-                    <button className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm">
+                    <button 
+                      onClick={() => {
+                        window.location.href = `/messages?chat=${listing.id + 100}&name=${encodeURIComponent(listing.name)}`;
+                      }}
+                      className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm"
+                    >
                       Learn More
                     </button>
                   </div>
