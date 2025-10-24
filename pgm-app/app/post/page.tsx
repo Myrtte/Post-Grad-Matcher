@@ -183,7 +183,7 @@ export default function PostPage() {
                 <label className="block text-lg font-bold text-gray-800 mb-2">Address:</label>
                 <input
                   type="text"
-                  name="location"
+                  name="address"
                   value={formData.address}
                   onChange={handleChange}
                   className="w-full border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
@@ -201,7 +201,7 @@ export default function PostPage() {
                   <input
                     type="text"
                     name="city"
-                    value={formData.bedrooms}
+                    value={formData.city}
                     onChange={handleChange}
                     className="w-fit text-center border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
                     required
@@ -216,7 +216,7 @@ export default function PostPage() {
                   <input
                     type="text"
                     name="state"
-                    value={formData.bathrooms}
+                    value={formData.state}
                     onChange={handleChange}
                     className="w-fit text-center border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
                     required
@@ -234,7 +234,7 @@ export default function PostPage() {
                   <input
                     type="text"
                     name="zipcode"
-                    value={formData.bedrooms}
+                    value={formData.zipcode}
                     onChange={handleChange}
                     className="w-fit text-center border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
                     required
@@ -249,7 +249,7 @@ export default function PostPage() {
                   <input
                     type="number"
                     name="price"
-                    value={formData.bathrooms}
+                    value={formData.price}
                     onChange={handleChange}
                     className="w-fit text-center border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
                     required
