@@ -42,7 +42,7 @@ export default function Home() {
           <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
           <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
           <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
-          <Link href="#" className="text-gray-700 hover:text-gray-900">Help</Link>
+          <Link href="/help_tab" className="text-gray-700 hover:text-gray-900">Help</Link>
           <Image 
             src={profileIcon} 
             alt="Profile" 

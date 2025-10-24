@@ -1,0 +1,36 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import profileIcon from "../../public/PGM Icon.png"
+import Image from "next/image.js";
+
+
+import { db } from "@/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+
+export default function FAQs() {
+
+    return (
+        <div className="flex h-screen w-full flex-col">
+        {/* Top Navigation Bar */}
+        <nav className="flex items-center justify-between border-b border-gray-400 bg-pastel px-6 py-4">
+            <h1 className="text-2xl font-bold">Made it</h1>
+            <div className="flex items-center gap-6">
+            <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
+            <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
+            <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
+            <Link href="/help_tab" className="text-gray-700 hover:text-gray-900">Help</Link>
+            <Image 
+                src={profileIcon} 
+                alt="Profile" 
+                width={30} 
+                height={30} 
+                className="rounded-full border border-gray-600"
+            />
+            {/*<div className="h-10 w-10 rounded-full bg-gray-400"></div>*/}
+            </div>
+        </nav>
+        </div>
+    )
+}
