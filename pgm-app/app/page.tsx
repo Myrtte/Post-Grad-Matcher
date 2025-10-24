@@ -14,12 +14,12 @@ type ListingDoc = {
   address: string;
   city: string;
   state: string;
-  zip: number;
+  zipcode: number;
   price: number;
-  beds: number;
-  baths: number;
-  open_beds: number;
-  open_baths: number;
+  bedrooms: number;
+  bathrooms: number;
+  availableRooms: number;
+  availableBathrooms: number;
   description?: string;
   createdAt?: unknown;
 }
@@ -119,14 +119,14 @@ export default function Home() {
                       {listing.title}
                     </h3>
                     <p className="text-sm text-gray-700 mb-1">
-                      {listing.beds} bed, {listing.baths} bath
+                      {listing.bedrooms} bed, {listing.bathrooms} bath
                     </p>
                     <p className="text-sm text-gray-600 mb-1">
                       {(() => {
                         if (listing.address) {
                           return `${listing.address}, ${listing.city}, ${listing.state}`;
                         } else {
-                          return `${listing.city}, ${listing.state} ${listing.zip}`;
+                          return `${listing.city}, ${listing.state} ${listing.zipcode}`;
                         }
                         })()}
                     </p>
