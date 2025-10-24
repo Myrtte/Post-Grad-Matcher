@@ -47,7 +47,7 @@ export default function Navbar ({ selectedPage }) {
               <span className="inline-block w-2 h-2 bg-red-500 rounded-full ml-1 mb-2"></span>
             )}
           </Link>
-          <Link href="#" className={selectedPage === "Help" ? linkSelected : linkNotSelected}>
+          <Link href="/help" className={selectedPage === "Help" ? linkSelected : linkNotSelected}>
             Help
           </Link>
           
