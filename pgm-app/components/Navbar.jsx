@@ -1,4 +1,3 @@
-import FirebaseTest from "./FirebaseTest"
 import Link from "next/link";
 import profileIcon from "../public/PGM Icon.png"
 import pgmLogo from "../public/PGM Full Logo.png"
@@ -13,24 +12,6 @@ export default function Navbar ({ selectedPage }) {
 
   return (
     <div>
-      {/* Firebase Test Modal */}
-      {showFirebaseTest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-auto rounded-lg bg-white p-6 shadow-xl border-2 border-gray-700">
-            {/* Close Button */}
-            <button
-              onClick={() => setShowFirebaseTest(false)}
-              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 font-bold text-xl"
-              aria-label="Close modal"
-            >
-              ✕
-            </button>
-
-            {/* Modal Content */}
-            <FirebaseTest />
-          </div>
-        </div>
-      )}
 
       {/* Top Navigation Bar */}
       <nav className="flex items-center justify-between border-b-2 border-gray-700 bg-pastel px-6 py-3 shadow-sm">
@@ -53,12 +34,6 @@ export default function Navbar ({ selectedPage }) {
 
         {/* Navigation Links */}
         <div className="flex items-center gap-8">
-          <span 
-            onClick={() => setShowFirebaseTest(true)} 
-            className="text-gray-700 hover:text-gray-900 cursor-pointer font-medium"
-          >
-            Firebase Test
-          </span>
           <Link href="/" className={selectedPage === "Home" ? linkSelected : linkNotSelected}>
             Home
           </Link>
