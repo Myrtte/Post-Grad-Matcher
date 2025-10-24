@@ -1,23 +1,60 @@
 "use client";
 
 import MapEmbed from "@/components/MapEmbed";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
+import Link from "next/link";
 
+import { db } from "@/firebase";
+import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
+
+type ListingDoc = {
+  id: string;
+  title: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: number;
+  price: number;
+  beds: number;
+  baths: number;
+  open_beds: number;
+  open_baths: number;
+  description?: string;
+  createdAt?: unknown;
+}
 export default function Home() {
-  const [query, setQuery] = useState("USA");
+  const [queryText, setQueryText] = useState("USA");
+  const [listings, setListings] = useState<ListingDoc[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const q = query(
+      collection(db, "listings"),
+      orderBy("createdAt", "desc"),
+      limit(50)
+    );
+
+    const unsubscribe = onSnapshot(q, (snap) => {
+      const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() as any })) as ListingDoc[];
+      setListings(docs);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Mock data for listings
-  const listings = [
-    { id: 1, name: "Sammy W.", beds: 2, baths: 2, location: "Brooklyn, NY", price: 1200, distance: 0.1, hasPhoto: true, tags: [] },
-    { id: 2, name: "Tom D.", beds: 3, baths: 2, location: "Manhattan, NY", price: 1500, distance: 0.2, hasPhoto: true, tags: [] },
-    { id: 3, name: "Julia B.", beds: 2, baths: 1, location: "Times Square", price: 1350, distance: 0.3, hasPhoto: true, tags: ["Studio"] },
-    { id: 4, name: "Brian B.", beds: 2, baths: 2, location: "Manhattan, NY", price: 1400, distance: 0.4, hasPhoto: true, tags: ["Dog ⭐"] },
-    { id: 5, name: "Sarah K.", beds: 1, baths: 1, location: "Queens, NY", price: 950, distance: 0.5, hasPhoto: true, tags: [] },
-    { id: 6, name: "Mike R.", beds: 3, baths: 2, location: "Bronx, NY", price: 1100, distance: 0.6, hasPhoto: true, tags: [] },
-    { id: 7, name: "Emma L.", beds: 2, baths: 1, location: "Staten Island, NY", price: 1050, distance: 0.7, hasPhoto: true, tags: ["Cat"] },
-    { id: 8, name: "Chris P.", beds: 2, baths: 1, location: "Brooklyn, NY", price: 1250, distance: 0.8, hasPhoto: true, tags: [] },
-  ];
+  // const listings = [
+    // { id: 1, name: "Sammy W.", beds: 2, baths: 2, location: "Brooklyn, NY", price: 1200, distance: 0.1, hasPhoto: true, tags: [] },
+    // { id: 2, name: "Tom D.", beds: 3, baths: 2, location: "Manhattan, NY", price: 1500, distance: 0.2, hasPhoto: true, tags: [] },
+    // { id: 3, name: "Julia B.", beds: 2, baths: 1, location: "Times Square", price: 1350, distance: 0.3, hasPhoto: true, tags: ["Studio"] },
+    // { id: 4, name: "Brian B.", beds: 2, baths: 2, location: "Manhattan, NY", price: 1400, distance: 0.4, hasPhoto: true, tags: ["Dog ⭐"] },
+    // { id: 5, name: "Sarah K.", beds: 1, baths: 1, location: "Queens, NY", price: 950, distance: 0.5, hasPhoto: true, tags: [] },
+    // { id: 6, name: "Mike R.", beds: 3, baths: 2, location: "Bronx, NY", price: 1100, distance: 0.6, hasPhoto: true, tags: [] },
+    // { id: 7, name: "Emma L.", beds: 2, baths: 1, location: "Staten Island, NY", price: 1050, distance: 0.7, hasPhoto: true, tags: ["Cat"] },
+    // { id: 8, name: "Chris P.", beds: 2, baths: 1, location: "Brooklyn, NY", price: 1250, distance: 0.8, hasPhoto: true, tags: [] },
+  // ];
 
   const formatQuery = (q: string) => {
     if(q === "USA") return "New York, New York"; // Temp for mock data
@@ -42,10 +79,10 @@ export default function Home() {
               Enter a search area
             </label>
             <h2 className="text-lg font-bold text-gray-800 mb-2">
-              {query === "USA" ? "Listings Near" : `Listings Near`}
+              {queryText === "USA" ? "Listings Near" : `Listings Near`}
             </h2>
             <h3 className="text-base font-semibold text-gray-700 mb-3">
-              {query ? formatQuery(query) : ""}
+              {queryText ? formatQuery(queryText) : ""}
             </h3>
             <input
               type="text"
@@ -53,7 +90,7 @@ export default function Home() {
               className="w-full border-2 border-gray-700 bg-white px-3 py-2 outline-none transition-colors rounded-sm"
               onKeyDown={(e) => {
                 if(e.key === "Enter"){
-                  setQuery(e.currentTarget.value);
+                  setQueryText(e.currentTarget.value);
                 }
               }}
             />
@@ -79,32 +116,38 @@ export default function Home() {
                   {/* Listing Details */}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-gray-800 text-base mb-1">
-                      {listing.name}
+                      {listing.title}
                     </h3>
                     <p className="text-sm text-gray-700 mb-1">
                       {listing.beds} bed, {listing.baths} bath
                     </p>
                     <p className="text-sm text-gray-600 mb-1">
-                      {listing.location}
+                      {(() => {
+                        if (listing.address) {
+                          return `${listing.address}, ${listing.city}, ${listing.state}`;
+                        } else {
+                          return `${listing.city}, ${listing.state} ${listing.zip}`;
+                        }
+                        })()}
                     </p>
-                    {listing.tags.length > 0 && (
-                      <p className="text-sm text-red-600 font-medium mb-1">
-                        {listing.tags.join(", ")}
-                      </p>
-                    )}
+                    <p className="text-sm text-gray-800 font-semibold mb-2">
+                      ${listing.price ?? 0} / mo
+                    </p>
+                    <div>
                     <button className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm">
                       Learn More
                     </button>
                   </div>
                 </div>
               </div>
+            </div>
             ))}
           </div>
         </div>
 
         {/* Right Side - Map Area */}
         <div className="flex-1 bg-[#e8dfc8] relative">
-          <MapEmbed query={query ? query : "USA"} />
+          <MapEmbed queryText={queryText ? queryText : "USA"} />
         </div>
       </div>
     </div>
