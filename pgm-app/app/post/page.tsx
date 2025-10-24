@@ -8,7 +8,10 @@ import Navbar from "@/components/Navbar";
 export default function PostPage() {
   const [formData, setFormData] = useState({
     title: "",
-    location: "",
+    address: "",
+    city: "",
+    state: "",
+    zipcode: "",
     price: "",
     bedrooms: "",
     bathrooms: "",
@@ -53,7 +56,10 @@ export default function PostPage() {
 
     await addDoc(collection(db, "listings"), {
         title: formData.title.trim(),
-        location: formData.location.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        state: formData.state.trim(),
+        zipcode: formData.zipcode.trim(),
         price: isNaN(price) ? 0 : price,
         bedrooms: isNaN(bedrooms) ? 0 : bedrooms,
         bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
@@ -68,7 +74,10 @@ export default function PostPage() {
       setSuccessMsg("Listing created!");
       setFormData({
         title: "",
-        location: "",
+        address: "",
+        city: "",
+        state: "",
+        zipcode: "",
         price: "",
         bedrooms: "",
         bathrooms: "",
@@ -169,17 +178,87 @@ export default function PostPage() {
                 />
               </div>
 
-              {/* Location */}
+              {/* Address */}
               <div className="flex items-baseline space-x-3 px-2">
-                <label className="block text-lg font-bold text-gray-800 mb-2">Location:</label>
+                <label className="block text-lg font-bold text-gray-800 mb-2">Address:</label>
                 <input
                   type="text"
                   name="location"
-                  value={formData.location}
+                  value={formData.address}
                   onChange={handleChange}
                   className="w-full border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
                   required
                 />
+              </div>
+
+              {/* Two Column Layout for Address Info */}
+              <div className="grid grid-cols-2 gap-8">
+                {/* Left Column */}
+                <div className="flex items-baseline space-x-3 px-2 justify-between">
+                  <label className="block text-lg font-bold text-gray-800 mb-2">
+                    City:
+                  </label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.bedrooms}
+                    onChange={handleChange}
+                    className="w-fit text-center border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
+                    required
+                  />
+                </div>
+
+                {/* Right Column */}
+                <div className="flex items-baseline space-x-3 px-2 justify-between">
+                  <label className="block text-lg font-bold text-gray-800 mb-2">
+                    State:
+                  </label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.bathrooms}
+                    onChange={handleChange}
+                    className="w-fit text-center border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Two Column Layout for Address Info/Price */}
+              <div className="grid grid-cols-2 gap-8">
+                {/* Left Column */}
+                <div className="flex items-baseline space-x-3 px-2 justify-between">
+                  <label className="block text-lg font-bold text-gray-800 mb-2">
+                    Zipcode:
+                  </label>
+                  <input
+                    type="text"
+                    name="zipcode"
+                    value={formData.bedrooms}
+                    onChange={handleChange}
+                    className="w-fit text-center border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
+                    required
+                  />
+                </div>
+
+                {/* Right Column */}
+                <div className="flex items-baseline space-x-3 px-2 justify-between">
+                  <label className="block text-lg font-bold text-gray-800 mb-2">
+                    Price/Month:
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.bathrooms}
+                    onChange={handleChange}
+                    className="w-fit text-center border-b-2 border-gray-700 bg-transparent px-0 py-2 outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="w-full text-center text-2xl font-bold text-gray-900 mt-15 mb-10">
+                Details
               </div>
 
               {/* Two Column Layout for Bedrooms/Bathrooms */}
