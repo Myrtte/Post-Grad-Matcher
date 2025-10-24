@@ -4,8 +4,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --pastel: #fdffe8;
-  --pastel-light: #fefff2;
+  --pastel: #f3e9cf;
+  --pastel-light: #f5f1e8;
+  --pastel-hover: #ede5d5;
 }
 
 @theme inline {
@@ -13,6 +14,7 @@
   --color-foreground: var(--foreground);
   --color-pastel: var(--pastel);
   --color-pastel-light: var(--pastel-light);
+  --color-pastel-hover: var(--pastel-hover);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-fira-code);
 }

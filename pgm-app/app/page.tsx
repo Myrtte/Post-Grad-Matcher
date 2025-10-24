@@ -2,70 +2,55 @@
 
 import MapEmbed from "@/components/MapEmbed";
 import { useState } from "react";
-import FirebaseTest from "../components/FirebaseTest.jsx";
-import Link from "next/link";
-import profileIcon from "../public/PGM Icon.png"
-import Image from "next/image.js";
+import Navbar from "../components/Navbar.jsx";
 
 export default function Home() {
   const [query, setQuery] = useState("USA");
-  const [showFirebaseTest, setShowFirebaseTest] = useState(false);
+
+  // Mock data for listings
+  const listings = [
+    { id: 1, name: "Sammy W.", beds: 2, baths: 2, location: "Brooklyn, NY", price: 1200, distance: 0.1, hasPhoto: true, tags: [] },
+    { id: 2, name: "Tom D.", beds: 3, baths: 2, location: "Manhattan, NY", price: 1500, distance: 0.2, hasPhoto: true, tags: [] },
+    { id: 3, name: "Julia B.", beds: 2, baths: 1, location: "Times Square", price: 1350, distance: 0.3, hasPhoto: true, tags: ["Studio"] },
+    { id: 4, name: "Brian B.", beds: 2, baths: 2, location: "Manhattan, NY", price: 1400, distance: 0.4, hasPhoto: true, tags: ["Dog ⭐"] },
+    { id: 5, name: "Sarah K.", beds: 1, baths: 1, location: "Queens, NY", price: 950, distance: 0.5, hasPhoto: true, tags: [] },
+    { id: 6, name: "Mike R.", beds: 3, baths: 2, location: "Bronx, NY", price: 1100, distance: 0.6, hasPhoto: true, tags: [] },
+    { id: 7, name: "Emma L.", beds: 2, baths: 1, location: "Staten Island, NY", price: 1050, distance: 0.7, hasPhoto: true, tags: ["Cat"] },
+    { id: 8, name: "Chris P.", beds: 2, baths: 1, location: "Brooklyn, NY", price: 1250, distance: 0.8, hasPhoto: true, tags: [] },
+  ];
+
+  const formatQuery = (q: string) => {
+    if(q === "USA") return "New York, New York"; // Temp for mock data
+
+    return q
+      .split(" ")
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ")
+  }
 
   return (
-    <div className="flex h-screen w-full flex-col">
-      {/* Firebase Test Modal */}
-      {showFirebaseTest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-auto rounded-lg bg-white p-6 shadow-xl">
-            {/* Close Button */}
-            <button
-              onClick={() => setShowFirebaseTest(false)}
-              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
-              aria-label="Close modal"
-            >
-              X
-            </button>
-
-            {/* Modal Content */}
-            <FirebaseTest />
-          </div>
-        </div>
-      )}
-
-      {/* Top Navigation Bar */}
-      <nav className="flex items-center justify-between border-b border-gray-400 bg-pastel px-6 py-4">
-        <h1 className="text-2xl font-bold">Post-Grad Matcher</h1>
-
-        {/* Navigation Links */}
-        <div className="flex items-center gap-6">
-          <span onClick={() => setShowFirebaseTest(true)} className="text-gray-700 hover:text-gray-900 cursor-pointer">Firebase Test</span>
-          <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-          <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
-          <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
-          <Link href="#" className="text-gray-700 hover:text-gray-900">Help</Link>
-          <Image 
-            src={profileIcon} 
-            alt="Profile" 
-            width={30} 
-            height={30} 
-            className="rounded-full border border-gray-600"
-          />
-        </div>
-      </nav>
+    <div className="flex h-screen w-full flex-col bg-pastel">
+      <Navbar selectedPage={"Home"}/>
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar - Listings */}
-        <div className="w-96 border-r border-gray-400 bg-pastel">
+        {/* Left Sidebar - Listings - Narrower like the prototype */}
+        <div className="w-80 border-r-2 border-gray-700 bg-pastel">
           {/* Search Area */}
-          <div className="border-b border-gray-400 p-4">
-            <h2 className="font-semibold text-gray-800">
-              {query === "USA" ? `Enter a search area to look for listings...` : `Listings near ${query}`}
+          <div className="border-b-2 border-gray-700 bg-pastel p-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Enter a search area
+            </label>
+            <h2 className="text-lg font-bold text-gray-800 mb-2">
+              {query === "USA" ? "Listings Near" : `Listings Near`}
             </h2>
+            <h3 className="text-base font-semibold text-gray-700 mb-3">
+              {query === "USA" ? "New York, New York" : formatQuery(query)}
+            </h3>
             <input
               type="text"
               placeholder="Enter zip code or city"
-              className="w-full border-b border-gray-400 px-1 outline-none mt-2"
+              className="w-full border-2 border-gray-700 bg-white px-3 py-2 outline-none transition-colors rounded-sm"
               onKeyDown={(e) => {
                 if(e.key === "Enter"){
                   setQuery(e.currentTarget.value);
@@ -75,19 +60,50 @@ export default function Home() {
           </div>
 
           {/* Scrollable Listings */}
-          <div className="overflow-y-auto" style={{ height: 'calc(100vh - 200px)' }}>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="border-b border-gray-200 bg-pastel p-4 hover:bg-pastel-light">
-                <h3 className="font-semibold">Roommate Listing {i}</h3>
-                <p className="text-sm text-gray-600 mt-1">2 bed, 1 bath • $1,200/mo</p>
-                <p className="text-sm text-gray-500 mt-1">0.{i} miles away</p>
+          <div className="overflow-y-auto pb-4" style={{ height: 'calc(100vh - 240px)' }}>
+            {listings.map((listing) => (
+              <div 
+                key={listing.id} 
+                className="border-b-2 border-gray-300 bg-pastel-light p-4 hover:bg-pastel-hover transition-colors cursor-pointer"
+              >
+                <div className="flex gap-4 items-center">
+                  {/* Thumbnail placeholder */}
+                  <div className="shrink-0">
+                    <div className="w-20 h-25 border-2 border-gray-700 bg-white flex items-center justify-center rounded-sm">
+                      <span className="text-xs text-gray-500 text-center px-1">
+                        Pic of<br/>Apartment
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Listing Details */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-gray-800 text-base mb-1">
+                      {listing.name}
+                    </h3>
+                    <p className="text-sm text-gray-700 mb-1">
+                      {listing.beds} bed, {listing.baths} bath
+                    </p>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {listing.location}
+                    </p>
+                    {listing.tags.length > 0 && (
+                      <p className="text-sm text-red-600 font-medium mb-1">
+                        {listing.tags.join(", ")}
+                      </p>
+                    )}
+                    <button className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm">
+                      Learn More
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Right Side - Map Area */}
-        <div className="flex-1 bg-gray-100">
+        <div className="flex-1 bg-[#e8dfc8] relative">
           <MapEmbed query={query} />
         </div>
       </div>

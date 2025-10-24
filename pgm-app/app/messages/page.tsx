@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { db } from "@/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import Navbar from "@/components/Navbar";
 
 export default function MessagesPage() {
   const [selectedChat, setSelectedChat] = useState<number | null>(null);
@@ -37,28 +38,18 @@ export default function MessagesPage() {
   };
 
   return (
-    <div className="flex h-screen w-full flex-col">
-      {/* Top Navigation Bar */}
-      <nav className="flex items-center justify-between border-b border-gray-300 bg-white px-6 py-4">
-        <h1 className="text-2xl font-bold">Post-Grad Matcher</h1>
-        <div className="flex items-center gap-6">
-          <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-          <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
-          <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
-          <Link href="#" className="text-gray-700 hover:text-gray-900">Help</Link>
-          <div className="h-10 w-10 rounded-full bg-gray-400"></div>
-        </div>
-      </nav>
+    <div className="flex h-screen w-full flex-col bg-pastel-light">
+      <Navbar selectedPage={"Messages"}/>
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Chat List Sidebar */}
-        <div className="w-80 border-r border-gray-300 bg-gray-50">
-          <div className="p-4">
+        <div className="w-80 border-r-2 border-gray-700">
+          <div className="p-4 border-b-2 border-gray-700 bg-pastel">
             <input
               type="text"
               placeholder="Search messages..."
-              className="w-full rounded-lg border border-gray-300 px-4 py-2"
+              className="w-full border-2 border-gray-700 bg-white px-4 py-2 rounded-sm"
             />
           </div>
           <div className="overflow-y-auto" style={{ height: 'calc(100vh - 130px)' }}>
@@ -66,8 +57,8 @@ export default function MessagesPage() {
               <div
                 key={chat.id}
                 onClick={() => setSelectedChat(chat.id)}
-                className={`cursor-pointer border-b border-gray-200 p-4 hover:bg-gray-100 
-                  ${selectedChat === chat.id ? 'bg-blue-50' : 'bg-white'}`}
+                className={`cursor-pointer border-b-2 border-gray-300 p-4 hover:bg-pastel-hover transition-colors
+                    ${selectedChat === chat.id ? 'bg-pastel-light border-l-4 border-l-blue-500/90' : 'bg-pasel-light'}`}
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -85,7 +76,7 @@ export default function MessagesPage() {
         {selectedChat ? (
           <div className="flex flex-1 flex-col">
             {/* Chat Header */}
-            <div className="border-b border-gray-300 bg-white p-4">
+            <div className="border-b-2 border-gray-700 bg-pastel p-4">
               <h2 className="font-semibold">
                 {chats.find(chat => chat.id === selectedChat)?.name}
               </h2>
@@ -95,30 +86,30 @@ export default function MessagesPage() {
             <div className="flex-1 overflow-y-auto p-4">
               {/* Add message bubbles here */}
               <div className="mb-4 flex justify-end">
-                <div className="max-w-xs rounded-lg bg-blue-500 px-4 py-2 text-white">
+                <div className="max-w-xs rounded-lg bg-blue-500/90 px-4 py-2 text-white">
                   Hello! I'm interested in your listing.
                 </div>
               </div>
               <div className="mb-4 flex justify-start">
-                <div className="max-w-xs rounded-lg bg-gray-200 px-4 py-2">
+                <div className="max-w-xs rounded-lg bg-gray-300/90 px-4 py-2">
                   Hi! Yes, it's still available. Would you like to schedule a viewing?
                 </div>
               </div>
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="border-t border-gray-300 bg-white p-4">
+            <form onSubmit={handleSendMessage} className="border-t-2 border-gray-700 bg-pastel p-4">
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Type a message..."
-                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2"
+                  className="flex-1 rounded-sm border-2 border-gray-700 bg-white px-4 py-2"
                 />
                 <button
                   type="submit"
-                  className="rounded-lg bg-blue-500 px-6 py-2 text-white hover:bg-blue-600"
+                  className="rounded-lg bg-blue-500/90 px-6 py-2 text-white hover:bg-blue-500"
                 >
                   Send
                 </button>
@@ -126,7 +117,7 @@ export default function MessagesPage() {
             </form>
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-center bg-gray-50">
+          <div className="flex flex-1 items-center justify-center bg-pastel-light">
             <p className="text-gray-500">Select a chat to start messaging</p>
           </div>
         )}
