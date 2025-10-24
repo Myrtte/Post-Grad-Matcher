@@ -69,7 +69,8 @@ export default function PostPage() {
         <h1 className="text-2xl font-bold">Post-Grad Matcher</h1>
         <div className="flex items-center gap-6">
           <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-          <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
+          <Link href="/post" className="text-gray-700 hover:text-gray-900">Make a Post</Link>
+          <Link href="#" className="text-gray-700 hover:text-gray-900">My Posts</Link>
           <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
           <Link href="/help_tab" className="text-gray-700 hover:text-gray-900">Help</Link>
           <Image 
@@ -84,7 +85,7 @@ export default function PostPage() {
       </nav>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto bg-pastel p-6">
         <div className="mx-auto max-w-2xl">
           <h2 className="mb-6 text-2xl font-bold">Create a New Listing</h2>
           
@@ -99,7 +100,7 @@ export default function PostPage() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 block w-full rounded-md border border-black-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
                 required
               />
             </div>
@@ -114,7 +115,7 @@ export default function PostPage() {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 block w-full rounded-md border border-black-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
                 required
               />
             </div>
@@ -130,7 +131,7 @@ export default function PostPage() {
                   name="price"
                   value={formData.price}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                  className="mt-1 block w-full rounded-md border border-black-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>
@@ -145,7 +146,7 @@ export default function PostPage() {
                   name="bedrooms"
                   value={formData.bedrooms}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                  className="mt-1 block w-full rounded-md border border-black-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>
@@ -160,7 +161,7 @@ export default function PostPage() {
                   name="bathrooms"
                   value={formData.bathrooms}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                  className="mt-1 block w-full rounded-md border border-black-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>
@@ -176,7 +177,7 @@ export default function PostPage() {
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 block w-full rounded-md border border-black-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
                 required
               />
             </div>
@@ -191,7 +192,7 @@ export default function PostPage() {
                 name="contactInfo"
                 value={formData.contactInfo}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 block w-full rounded-md border border-black-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
                 required
               />
             </div>

@@ -45,7 +45,8 @@ export default function MessagesPage() {
         <h1 className="text-2xl font-bold">Post-Grad Matcher</h1>
         <div className="flex items-center gap-6">
           <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-          <Link href="/post" className="text-gray-700 hover:text-gray-900">Post</Link>
+          <Link href="/post" className="text-gray-700 hover:text-gray-900">Make a Post</Link>
+          <Link href="#" className="text-gray-700 hover:text-gray-900">My Posts</Link>
           <Link href="/messages" className="text-gray-700 hover:text-gray-900">Messages</Link>
           <Link href="/help_tab" className="text-gray-700 hover:text-gray-900">Help</Link>
           <Image
@@ -63,7 +64,7 @@ export default function MessagesPage() {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Chat List Sidebar */}
-        <div className="w-80 border-r border-gray-300 bg-gray-50">
+        <div className="w-80 border-r border-gray-300 bg-pastel-50">
           <div className="p-4">
             <input
               type="text"
@@ -95,7 +96,7 @@ export default function MessagesPage() {
         {selectedChat ? (
           <div className="flex flex-1 flex-col">
             {/* Chat Header */}
-            <div className="border-b border-gray-300 bg-white p-4">
+            <div className="border-b border-gray-300 bg-pastel p-4">
               <h2 className="font-semibold">
                 {chats.find(chat => chat.id === selectedChat)?.name}
               </h2>
