@@ -122,19 +122,19 @@ export default function Home() {
                       {listing.bedrooms} bed, {listing.bathrooms} bath
                     </p>
                     <p className="text-sm text-gray-600 mb-1">
-                      {(() => {
-                        if (listing.address) {
-                          return `${listing.address}, ${listing.city}, ${listing.state}`;
-                        } else {
-                          return `${listing.city}, ${listing.state} ${listing.zipcode}`;
-                        }
-                        })()}
+                      {listing.location}
                     </p>
-                    <p className="text-sm text-gray-800 font-semibold mb-2">
-                      ${listing.price ?? 0} / mo
-                    </p>
-                    <div>
-                    <button className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm">
+                    {listing.tags.length > 0 && (
+                      <p className="text-sm text-red-600 font-medium mb-1">
+                        {listing.tags.join(", ")}
+                      </p>
+                    )}
+                    <button 
+                      onClick={() => {
+                        window.location.href = `/messages?chat=${listing.id}&name=${encodeURIComponent(listing.name)}`;
+                      }}
+                      className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm"
+                    >
                       Learn More
                     </button>
                   </div>
