@@ -29,11 +29,12 @@ type Props = {
   queryText: string;
   selectedId?: string | null;
   onSelectId?: (id: string | null) => void;
+  onMarkerClick?: (city: string, state: string) => void;
 };
 
 const containerStyle = { width: "100%", height: "100%" };
 
-export default function GoogleMapMulti({ listings, queryText, selectedId: controlledSelectedId, onSelectId }: Props) {
+export default function GoogleMapMulti({ listings, queryText, selectedId: controlledSelectedId, onSelectId, onMarkerClick }: Props) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ["places"] as any,
@@ -58,9 +59,11 @@ export default function GoogleMapMulti({ listings, queryText, selectedId: contro
           title: l.title,
           position: coords,
           subtitle: `${l.city}, ${l.state} ${l.zipcode}`,
+          city: l.city,
+          state: l.state,
         };
       })
-      .filter(Boolean) as Array<{ id: string; title: string; position: google.maps.LatLngLiteral; subtitle: string }>;
+      .filter(Boolean) as Array<{ id: string; title: string; position: google.maps.LatLngLiteral; subtitle: string; city: string; state: string }>;
   }, [listings, geocoded]);
 
   const fitToMarkers = useCallback(() => {
@@ -196,6 +199,7 @@ export default function GoogleMapMulti({ listings, queryText, selectedId: contro
           onClick={() => {
             setSelectedId(m.id);
             if (onSelectId) onSelectId(m.id);
+            if (onMarkerClick) onMarkerClick(m.city, m.state);
           }}
         />
       ))}

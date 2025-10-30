@@ -36,15 +36,65 @@ export default function Home() {
   const filteredListings = useMemo(() => {
     const raw = (queryText || "").trim();
     if (!raw || raw.toUpperCase() === "USA") return listings;
+    
     const lower = raw.toLowerCase();
+    // Split by commas or whitespace, then clean up empty strings and trim
+    const parts = raw.split(/[,\s]+/).map(p => p.trim()).filter(p => p.length > 0);
+    
+    // Check if it's just a zipcode (all digits)
     const zipDigits = /^[0-9]{3,}$/.test(raw) ? raw.replace(/\D/g, "") : null;
+    
+    // Try to identify state abbreviation (2 letters, usually at end)
+    let statePart: string | null = null;
+    let cityParts: string[] = parts;
+    
+    // Check if last part looks like a state abbreviation (2 letters)
+    if (parts.length > 1) {
+      const lastPart = parts[parts.length - 1];
+      if (/^[A-Za-z]{2}$/.test(lastPart)) {
+        statePart = lastPart.toUpperCase();
+        cityParts = parts.slice(0, -1);
+      }
+    }
+    
+    // If only one part and it's 2 letters, treat as state
+    if (parts.length === 1 && /^[A-Za-z]{2}$/.test(parts[0])) {
+      statePart = parts[0].toUpperCase();
+      cityParts = [];
+    }
+    
+    const citySearch = cityParts.length > 0 ? cityParts.join(" ").toLowerCase() : null;
+    
     return listings.filter((l) => {
-      const cityMatch = (l.city || "").toLowerCase().includes(lower);
-      const listingZip = (l as any).zipcode;
-      const listingZipStr = typeof listingZip === "number" ? String(listingZip) : (listingZip || "");
-      const listingZipDigits = String(listingZipStr).replace(/\D/g, "");
-      const zipMatch = zipDigits !== null ? listingZipDigits === zipDigits : false;
-      return cityMatch || zipMatch;
+      // Zipcode match helper
+      const zipMatch = () => {
+        if (zipDigits === null) return false;
+        const listingZip = (l as any).zipcode;
+        const listingZipStr = typeof listingZip === "number" ? String(listingZip) : (listingZip || "");
+        const listingZipDigits = String(listingZipStr).replace(/\D/g, "");
+        return listingZipDigits === zipDigits;
+      };
+      
+      // Zipcode match (if search is just digits)
+      if (zipDigits !== null && zipMatch()) return true;
+      
+      // State match
+      const stateMatch = statePart 
+        ? (l.state || "").toUpperCase() === statePart 
+        : false;
+      
+      // City match (partial, case-insensitive)
+      const cityMatch = citySearch 
+        ? (l.city || "").toLowerCase().includes(citySearch)
+        : false;
+      
+      // If state was specified, require state match AND (city match OR no city specified)
+      if (statePart !== null) {
+        return stateMatch && (cityMatch || cityParts.length === 0);
+      }
+      
+      // If no state specified, check city or zipcode
+      return cityMatch || zipMatch();
     });
   }, [listings, queryText]);
 
@@ -113,6 +163,11 @@ export default function Home() {
       window.location.href = `/messages?chat=${chatId}&name=${encodeURIComponent(contactName)}`;
     }
   }
+
+  const handleMarkerClick = (city: string, state: string) => {
+    setQueryText(`${city}, ${state}`);
+    setSearchInput("");
+  };
 
   return (
     <div className="flex h-screen w-full flex-col bg-pastel">
@@ -214,6 +269,7 @@ export default function Home() {
             queryText={queryText ? queryText : "USA"} 
             selectedId={selectedMapId}
             onSelectId={setSelectedMapId}
+            onMarkerClick={handleMarkerClick}
           />
         </div>
       </div>
