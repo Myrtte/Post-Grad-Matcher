@@ -2,11 +2,8 @@ import Link from "next/link";
 import profileIcon from "../public/PGM Icon.png"
 import pgmLogo from "../public/PGM Full Logo.png"
 import Image from "next/image.js";
-import { useState } from "react";
 
 export default function Navbar ({ selectedPage }) {
-  const [showFirebaseTest, setShowFirebaseTest] = useState(false);
-
   const linkSelected = "text-gray-800 font-semibold hover:text-gray-900 underline decoration-2 underline-offset-4 decoration-blue-500";
   const linkNotSelected = "text-gray-700 hover:text-gray-900 font-medium";
 
@@ -37,10 +34,10 @@ export default function Navbar ({ selectedPage }) {
           <Link href="/" className={selectedPage === "Home" ? linkSelected : linkNotSelected}>
             Home
           </Link>
-          <Link href="/post" className={selectedPage === "Post" ? linkSelected : linkNotSelected}>
+          <Link href="/create-a-post" className={selectedPage === "Create A Post" ? linkSelected : linkNotSelected}>
             Create a Post
           </Link>
-          <Link href="/post" className={selectedPage === "My_Post" ? linkSelected : linkNotSelected}>
+          <Link href="/my-posts" className={selectedPage === "My Posts" ? linkSelected : linkNotSelected}>
             My Posts
           </Link>
           <Link href="/messages" className={selectedPage === "Messages" ? linkSelected : linkNotSelected}>

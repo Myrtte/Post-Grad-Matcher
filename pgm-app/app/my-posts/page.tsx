@@ -123,7 +123,7 @@ export default function PostPage() {
 
   return (
     <div className="flex h-screen w-full flex-col bg-pastel">
-      <Navbar selectedPage={"Post"}/>
+      <Navbar selectedPage={"My Posts"}/>
 
       {/* Main Content - Two Column Layout */}
       <div className="flex flex-1 overflow-hidden">
