@@ -122,9 +122,6 @@ export default function MyPostsPage() {
                         <p className="text-gray-600 text-sm">Posted on {formatDate(post.createdAt)}</p>
                       </div>
                       <div className="flex gap-2">
-                        <button className="px-4 py-2 border-2 border-gray-700 rounded-lg font-semibold text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
-                          Edit
-                        </button>
                         <button 
                           className="px-4 py-2 border-2 border-red-500 rounded-lg font-semibold text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
                           onClick={() => deletePost(post.id)}
