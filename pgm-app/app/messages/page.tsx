@@ -232,17 +232,17 @@ export default function MessagesPage() {
                     <h3 className="font-semibold">{chat.name}</h3>
                     <p className="text-sm text-gray-600">{chat.lastMessage}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 -mt-0.5">
                     <span className="text-xs text-gray-500">{chat.time}</span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteChat(chat.id);
                       }}
-                      className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-100 transition-colors"
+                      className="text-red-500/70 hover:text-red-500 font-bold rounded transition-colors mb-1 cursor-pointer"
                       title="Delete conversation"
                     >
-                      ✕
+                      x
                     </button>
                   </div>
                 </div>
