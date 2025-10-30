@@ -27,11 +27,13 @@ type ListingDoc = {
 type Props = {
   listings: ListingDoc[];
   queryText: string;
+  selectedId?: string | null;
+  onSelectId?: (id: string | null) => void;
 };
 
 const containerStyle = { width: "100%", height: "100%" };
 
-export default function GoogleMapMulti({ listings, queryText }: Props) {
+export default function GoogleMapMulti({ listings, queryText, selectedId: controlledSelectedId, onSelectId }: Props) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ["places"] as any,
@@ -74,6 +76,18 @@ export default function GoogleMapMulti({ listings, queryText }: Props) {
     if (userRecentered) return;
     fitToMarkers();
   }, [isLoaded, markers, fitToMarkers, userRecentered]);
+
+  // When a controlled selectedId is provided, pan/zoom to that marker and open the info window
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (!mapRef.current) return;
+    if (!controlledSelectedId) return;
+    const m = markers.find((x) => x.id === controlledSelectedId);
+    if (!m) return;
+    mapRef.current.panTo(m.position);
+    mapRef.current.setZoom(15);
+    setSelectedId(controlledSelectedId);
+  }, [isLoaded, controlledSelectedId, markers]);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -176,7 +190,14 @@ export default function GoogleMapMulti({ listings, queryText }: Props) {
       }}
     >
       {markers.map((m) => (
-        <Marker key={m.id} position={m.position} onClick={() => setSelectedId(m.id)} />
+        <Marker
+          key={m.id}
+          position={m.position}
+          onClick={() => {
+            setSelectedId(m.id);
+            if (onSelectId) onSelectId(m.id);
+          }}
+        />
       ))}
 
       {selectedId && (
