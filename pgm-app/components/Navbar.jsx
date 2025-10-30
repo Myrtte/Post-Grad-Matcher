@@ -38,7 +38,10 @@ export default function Navbar ({ selectedPage }) {
             Home
           </Link>
           <Link href="/post" className={selectedPage === "Post" ? linkSelected : linkNotSelected}>
-            Post
+            Create a Post
+          </Link>
+          <Link href="/post" className={selectedPage === "My_Post" ? linkSelected : linkNotSelected}>
+            My Posts
           </Link>
           <Link href="/messages" className={selectedPage === "Messages" ? linkSelected : linkNotSelected}>
             Messages
@@ -52,7 +55,9 @@ export default function Navbar ({ selectedPage }) {
           </Link>
           
           {/* Profile Icon */}
-          <button className="border-2 border-gray-700 rounded-full hover:border-gray-900 transition-colors">
+            <Link 
+            href="/profile" className="border-2 border-gray-700 rounded-full hover:border-gray-900 transition-colors">
+            
             <Image 
               src={profileIcon} 
               alt="Profile" 
@@ -60,7 +65,7 @@ export default function Navbar ({ selectedPage }) {
               height={35} 
               className="rounded-full"
             />
-          </button>
+            </Link>
         </div>
       </nav>
     </div>
