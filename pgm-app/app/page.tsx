@@ -1,6 +1,6 @@
 "use client";
 
-import MapEmbed from "@/components/MapEmbed";
+import GoogleMapMulti from "@/components/GoogleMapMulti";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Link from "next/link";
@@ -146,7 +146,7 @@ export default function Home() {
 
         {/* Right Side - Map Area */}
         <div className="flex-1 bg-[#e8dfc8] relative">
-          <MapEmbed query={queryText ? queryText : "USA"} />
+          <GoogleMapMulti listings={listings} queryText={queryText ? queryText : "USA"} />
         </div>
       </div>
     </div>
