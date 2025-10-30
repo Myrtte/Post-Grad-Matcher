@@ -1,7 +1,7 @@
 "use client";
 
 import GoogleMapMulti from "@/components/GoogleMapMulti";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Link from "next/link";
 
@@ -30,6 +30,22 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedListing, setSelectedListing] = useState<ListingDoc | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedMapId, setSelectedMapId] = useState<string | null>(null);
+
+  const filteredListings = useMemo(() => {
+    const raw = (queryText || "").trim();
+    if (!raw || raw.toUpperCase() === "USA") return listings;
+    const lower = raw.toLowerCase();
+    const zipDigits = /^[0-9]{3,}$/.test(raw) ? raw.replace(/\D/g, "") : null;
+    return listings.filter((l) => {
+      const cityMatch = (l.city || "").toLowerCase().includes(lower);
+      const listingZip = (l as any).zipcode;
+      const listingZipStr = typeof listingZip === "number" ? String(listingZip) : (listingZip || "");
+      const listingZipDigits = String(listingZipStr).replace(/\D/g, "");
+      const zipMatch = zipDigits !== null ? listingZipDigits === zipDigits : false;
+      return cityMatch || zipMatch;
+    });
+  }, [listings, queryText]);
 
   useEffect(() => {
     if (!db) {
@@ -118,10 +134,11 @@ export default function Home() {
 
           {/* Scrollable Listings */}
           <div className="overflow-y-auto pb-4" style={{ height: 'calc(100vh - 240px)' }}>
-            {listings.map((listing) => (
+            {filteredListings.map((listing) => (
               <div 
                 key={listing.id} 
                 className="border-b-2 border-gray-300 bg-pastel-light p-4 hover:bg-pastel-hover transition-colors cursor-pointer"
+                onClick={() => setSelectedMapId(listing.id)}
               >
                 <div className="flex gap-4 items-center">
                   {/* Thumbnail placeholder */}
@@ -148,7 +165,7 @@ export default function Home() {
                       ${listing.price}/month
                     </p>
                     <button 
-                      onClick={() => openModal(listing)}
+                      onClick={(e) => { e.stopPropagation(); openModal(listing); }}
                       className="mt-2 border-2 border-gray-700 bg-white px-3 py-1 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm"
                     >
                       Learn More
@@ -157,12 +174,30 @@ export default function Home() {
                 </div>
               </div>
             ))}
+            {filteredListings.length === 0 && (
+              <div className="p-4 text-sm text-gray-600">No listings match your search.</div>
+            )}
+            {queryText && queryText.toUpperCase() !== "USA" && (
+              <div className="p-4">
+                <button
+                  onClick={() => setQueryText("USA")}
+                  className="w-full border-2 border-gray-700 bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm"
+                >
+                  Show All Listings
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Right Side - Map Area */}
         <div className="flex-1 bg-[#e8dfc8] relative">
-          <GoogleMapMulti listings={listings} queryText={queryText ? queryText : "USA"} />
+          <GoogleMapMulti 
+            listings={listings} 
+            queryText={queryText ? queryText : "USA"} 
+            selectedId={selectedMapId}
+            onSelectId={setSelectedMapId}
+          />
         </div>
       </div>
 
