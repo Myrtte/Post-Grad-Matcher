@@ -55,8 +55,7 @@ export default function Navbar ({ selectedPage }) {
           </Link>
           
           {/* Profile Icon */}
-            <Link 
-            href="/profile" className="border-2 border-gray-700 rounded-full hover:border-gray-900 transition-colors">
+            <div className="border-2 border-gray-700 rounded-full">
             
             <Image 
               src={profileIcon} 
@@ -65,7 +64,7 @@ export default function Navbar ({ selectedPage }) {
               height={35} 
               className="rounded-full"
             />
-            </Link>
+            </div>
         </div>
       </nav>
     </div>

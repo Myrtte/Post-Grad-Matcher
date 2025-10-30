@@ -186,7 +186,7 @@ export default function Home() {
                 {/* Close button */}
                 <button
                   onClick={closeModal}
-                  className="text-gray-600 hover:text-red-500/70 text-2xl font-bold -mt-[1] mr-2.5"
+                  className="text-gray-600 hover:text-red-500/70 text-2xl font-bold -mt-[1] mr-2.5 cursor-pointer"
                 >
                   x
                 </button>

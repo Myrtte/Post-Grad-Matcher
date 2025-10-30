@@ -239,7 +239,7 @@ export default function MessagesPage() {
                         e.stopPropagation();
                         deleteChat(chat.id);
                       }}
-                      className="text-red-500/70 hover:text-red-500 font-bold rounded transition-colors mb-1"
+                      className="text-red-500/70 hover:text-red-500 font-bold rounded transition-colors mb-1 cursor-pointer"
                       title="Delete conversation"
                     >
                       x
