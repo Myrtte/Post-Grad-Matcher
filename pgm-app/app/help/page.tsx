@@ -27,7 +27,7 @@ export default function HelpPage() {
               className={`border-b-2 border-gray-700 p-4 cursor-pointer flex justify-between hover:bg-pastel-hover ${selected === "about us" ? "bg-pastel" : ""}`}
               onClick={() => setSelected("about us")}
             >
-              <span className="text-gray-900 font-bold text-xl">Aboout Us</span>
+              <span className="text-gray-900 font-bold text-xl">About Us</span>
               <span className="text-gray-900 font-bold text-xl">{selected === "about us" ? `>` : ""}</span>
             </div>
 
