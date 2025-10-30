@@ -65,7 +65,6 @@ export default function MyPostsPage() {
   };
 
   const deletePost = async (postId: string) => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
     try {
       if (!db) throw new Error("Database not initialized");
       await deleteDoc(doc(db, "listings", postId));
