@@ -295,13 +295,19 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Action Button */}
-              <button
-                onClick={handleGetInContact}
-                className="mt-6 w-full border-2 border-gray-700 bg-green-100 hover:bg-green-200 px-6 py-3 text-base font-bold transition-colors cursor-pointer rounded-sm"
-              >
-                Get in Contact
-              </button>
+              {/* Action Button or Message */}
+              {(selectedListing as any).myPostTag ? (
+                <div className="mt-6 w-full border-2 border-gray-700 bg-gray-100 px-6 py-3 text-base font-semibold text-gray-700 text-center rounded-sm">
+                  This is your listing
+                </div>
+              ) : (
+                <button
+                  onClick={handleGetInContact}
+                  className="mt-6 w-full border-2 border-gray-700 bg-green-100 hover:bg-green-200 px-6 py-3 text-base font-bold transition-colors cursor-pointer rounded-sm"
+                >
+                  Get in Contact
+                </button>
+              )}
             </div>
           </div>
         </div>
