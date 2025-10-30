@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
+import Link from "next/link";
 
 type ListingDoc = {
   id: string;
@@ -93,9 +94,12 @@ export default function MyPostsPage() {
           <div className="max-w-4xl w-full py-10">
             <div className="flex justify-between items-center mb-10">
               <h1 className="text-4xl font-bold text-gray-900">My Listings</h1>
-              <button className="bg-pastel hover:bg-pastel-hover border-2 border-gray-700 px-6 py-3 rounded-lg font-bold text-gray-900 transition-colors">
+              <Link
+                className="bg-pastel hover:bg-pastel-hover border-2 border-gray-700 px-6 py-3 rounded-lg font-bold text-gray-900 transition-colors cursor-pointer"
+                href={"/create-a-post"}
+              >
                 + Create New Post
-              </button>
+              </Link>
             </div>
 
             {posts.length === 0 ? (
