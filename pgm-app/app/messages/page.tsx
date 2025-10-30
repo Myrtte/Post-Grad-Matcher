@@ -232,7 +232,7 @@ export default function MessagesPage() {
                     <h3 className="font-semibold">{chat.name}</h3>
                     <p className="text-sm text-gray-600">{chat.lastMessage}</p>
                   </div>
-                  <div className="flex items-center gap-2 -mt-[2px]">
+                  <div className="flex items-center gap-2 -mt-0.5">
                     <span className="text-xs text-gray-500">{chat.time}</span>
                     <button
                       onClick={(e) => {
