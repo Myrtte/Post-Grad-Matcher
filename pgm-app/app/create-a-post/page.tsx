@@ -70,6 +70,7 @@ export default function CreatePostPage() {
         description: formData.description.trim(),
         contactInfo: formData.contactInfo.trim(),
         createdAt: serverTimestamp(),
+        myPostTag: true,
       });
 
       setShowSuccess(true);

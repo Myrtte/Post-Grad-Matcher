@@ -22,7 +22,17 @@ export default function MessagesPage() {
     try {
       const chatsDoc = await getDoc(doc(db, "userData", "chats"));
       if (chatsDoc.exists()) {
-        setChats(chatsDoc.data().chatList || []);
+        const raw = (chatsDoc.data().chatList || []) as Array<{id: number, name: string, lastMessage: string, time: string}>;
+        const seen = new Set<number>();
+        const deduped: Array<{id: number, name: string, lastMessage: string, time: string}> = [];
+        for (const c of raw) {
+          const idNum = typeof c.id === 'number' ? c.id : parseInt(String(c.id));
+          if (!isNaN(idNum) && !seen.has(idNum)) {
+            seen.add(idNum);
+            deduped.push({ ...c, id: idNum });
+          }
+        }
+        setChats(deduped);
       }
       setChatsLoaded(true);
     } catch (error) {
@@ -71,9 +81,16 @@ export default function MessagesPage() {
 
   const saveChats = async (updatedChats: Array<{id: number, name: string, lastMessage: string, time: string}>) => {
     try {
-      await setDoc(doc(db, "userData", "chats"), {
-        chatList: updatedChats
-      });
+      const seen = new Set<number>();
+      const deduped: Array<{id: number, name: string, lastMessage: string, time: string}> = [];
+      for (const c of updatedChats) {
+        const idNum = typeof c.id === 'number' ? c.id : parseInt(String(c.id));
+        if (!isNaN(idNum) && !seen.has(idNum)) {
+          seen.add(idNum);
+          deduped.push({ ...c, id: idNum });
+        }
+      }
+      await setDoc(doc(db, "userData", "chats"), { chatList: deduped });
     } catch (error) {
       console.error("Error saving chats:", error);
     }
@@ -82,9 +99,26 @@ export default function MessagesPage() {
   const deleteChat = async (chatId: number) => {
     try {
       // Delete all messages for this chat from Firebase
-      const messagesSnapshot = await getDocs(query(collection(db, "messages"), where("chatId", "==", chatId)));
-      const deletePromises = messagesSnapshot.docs.map(doc => deleteDoc(doc.ref));
-      await Promise.all(deletePromises);
+      const [snapNum, snapStr] = await Promise.all([
+        getDocs(query(collection(db, "messages"), where("chatId", "==", chatId))),
+        getDocs(query(collection(db, "messages"), where("chatId", "==", String(chatId))))
+      ]);
+      const directDocs = [...snapNum.docs, ...snapStr.docs];
+
+      // Fallback: scan all messages to catch any legacy values (e.g., NaN, different types)
+      const allSnap = await getDocs(collection(db, "messages"));
+      const scannedDocs = allSnap.docs.filter(d => {
+        const data = d.data() as any;
+        const v = data?.chatId;
+        return v !== undefined && v !== null && String(v) === String(chatId);
+      });
+
+      const unique = new Map<string, typeof directDocs[number]>();
+      [...directDocs, ...scannedDocs].forEach(d => unique.set(d.id, d));
+      const toDelete = Array.from(unique.values());
+      if (toDelete.length > 0) {
+        await Promise.all(toDelete.map(d => deleteDoc(d.ref)));
+      }
 
       // Remove chat from local state
       const updatedChats = chats.filter(chat => chat.id !== chatId);
@@ -102,6 +136,9 @@ export default function MessagesPage() {
       if (selectedChat === chatId) {
         setSelectedChat(null);
       }
+
+      // Refresh messages after deletion
+      await loadMessages();
     } catch (error) {
       console.error("Error deleting chat:", error);
     }

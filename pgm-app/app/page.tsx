@@ -96,7 +96,19 @@ export default function Home() {
 
   const handleGetInContact = () => {
     if(selectedListing){
-      const chatId = parseInt(selectedListing.id.replace(/\D/g, "")) + 100;
+      const makeChatId = (id: string) => {
+        const digits = id.replace(/\D/g, "");
+        if (digits.length > 0) {
+          const n = parseInt(digits, 10);
+          return isNaN(n) ? 100 : n + 100;
+        }
+        let acc = 0 >>> 0;
+        for (let i = 0; i < id.length; i++) {
+          acc = (((acc * 31) >>> 0) + id.charCodeAt(i)) >>> 0;
+        }
+        return (acc % 100000000) + 100;
+      };
+      const chatId = makeChatId(selectedListing.id);
       const contactName = selectedListing.name || selectedListing.title;
       window.location.href = `/messages?chat=${chatId}&name=${encodeURIComponent(contactName)}`;
     }

@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { db } from "@/firebase";
+import { deleteDoc, doc, collection, onSnapshot, query, where } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 
@@ -22,46 +24,38 @@ type ListingDoc = {
 }
 
 export default function MyPostsPage() {
-  // This will eventually come from your Firebase database
-  const [posts, setPosts] = useState<ListingDoc[]>([
-    {
-      id: "1",
-      title: "Spacious Apartment Near UF Campus",
-      name: "Midtown Place",
-      address: "123 SW 2nd Ave",
-      city: "Gainesville",
-      state: "FL",
-      zipcode: 32601,
-      price: 850,
-      bedrooms: 2,
-      bathrooms: 2,
-      availableRooms: 1,
-      availableBathrooms: 1,
-      description: "Looking for a clean, quiet roommate to share a spacious 2-bedroom apartment just 10 minutes from campus. The apartment has updated appliances, in-unit washer/dryer, and a balcony. Rent includes water and trash. You'd have your own bathroom and plenty of closet space. I'm a recent UF grad working remotely, so I'm home often but keep to myself. Ideal for someone who values a peaceful living environment.",
-      createdAt: new Date("2024-10-28")
-    },
-    {
-      id: "2",
-      title: "Room in Downtown House",
-      name: "Downtown Gator House",
-      address: "456 NW 5th St",
-      city: "Gainesville",
-      state: "FL",
-      zipcode: 32601,
-      price: 600,
-      bedrooms: 4,
-      bathrooms: 2,
-      availableRooms: 1,
-      availableBathrooms: 1,
-      description: "We have one room available in our 4-bedroom house! Three UF alums (all working professionals) looking for a fourth person to complete our crew. The house has a big backyard, street parking, and a fully equipped kitchen. We're all pretty social and enjoy hosting game nights and weekend BBQs, but we also respect each other's space during the work week. The neighborhood is super walkable with lots of restaurants and bars nearby.",
-      createdAt: new Date("2024-10-25")
-    }
-  ]);
+  const [posts, setPosts] = useState<ListingDoc[]>([]);
 
-  const [activeStatus, setActiveStatus] = useState<{ [key: string]: boolean }>({
-    "1": true,
-    "2": true
-  });
+  const [activeStatus, setActiveStatus] = useState<{ [key: string]: boolean }>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!db) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const q = query(
+        collection(db, "listings"),
+        where("myPostTag", "==", true)
+      );
+      const unsub = onSnapshot(q, (snap) => {
+        const docs = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as ListingDoc[];
+        const toMillis = (v: any) => {
+          if (!v) return 0;
+          if (typeof v.toMillis === "function") return v.toMillis();
+          if (v instanceof Date) return v.getTime();
+          return 0;
+        };
+        docs.sort((a: any, b: any) => toMillis(b.createdAt) - toMillis(a.createdAt));
+        setPosts(docs);
+        setLoading(false);
+      });
+      return () => unsub();
+    } catch (e) {
+      setLoading(false);
+    }
+  }, []);
 
   const togglePostStatus = (postId: string) => {
     setActiveStatus(prev => ({
@@ -70,15 +64,33 @@ export default function MyPostsPage() {
     }));
   };
 
-  const deletePost = (postId: string) => {
-    if (confirm("Are you sure you want to delete this post?")) {
-      setPosts(posts.filter(post => post.id !== postId));
+  const deletePost = async (postId: string) => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+    try {
+      if (!db) throw new Error("Database not initialized");
+      await deleteDoc(doc(db, "listings", postId));
+      setPosts(prev => prev.filter(post => post.id !== postId));
+    } catch (e) {
+      alert("Failed to delete the post. Please try again.");
     }
   };
 
-  const formatDate = (date: unknown) => {
-    if (date instanceof Date) {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatDate = (value: unknown) => {
+    // Firestore Timestamp
+    if (value && typeof value === "object" && typeof (value as any).toDate === "function") {
+      const d = (value as any).toDate();
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    // JS Date
+    if (value instanceof Date) {
+      return value.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    // Milliseconds epoch
+    if (typeof value === 'number') {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
     }
     return "N/A";
   };
@@ -102,12 +114,16 @@ export default function MyPostsPage() {
               </Link>
             </div>
 
-            {posts.length === 0 ? (
+            {loading ? (
+              <div className="bg-white p-12 rounded-lg border-2 border-gray-700 text-center">
+                <p className="text-gray-500 text-lg">Loading...</p>
+              </div>
+            ) : posts.length === 0 ? (
               <div className="bg-white p-12 rounded-lg border-2 border-gray-700 text-center">
                 <p className="text-gray-500 text-lg mb-4">You haven't created any listings yet.</p>
-                <button className="bg-pastel hover:bg-pastel-hover border-2 border-gray-700 px-6 py-3 rounded-lg font-bold text-gray-900 transition-colors">
+                <Link href="/create-a-post" className="inline-block bg-pastel hover:bg-pastel-hover border-2 border-gray-700 px-6 py-3 rounded-lg font-bold text-gray-900 transition-colors cursor-pointer">
                   Create Your First Post
-                </button>
+                </Link>
               </div>
             ) : (
               <div className="space-y-6 pb-16">
