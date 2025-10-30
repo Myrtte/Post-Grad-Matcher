@@ -31,6 +31,7 @@ export default function Home() {
   const [selectedListing, setSelectedListing] = useState<ListingDoc | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedMapId, setSelectedMapId] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState("");
 
   const filteredListings = useMemo(() => {
     const raw = (queryText || "").trim();
@@ -75,7 +76,7 @@ export default function Home() {
   }, []);
 
   const formatQuery = (q: string) => {
-    if(q === "USA") return "New York, New York";
+    if(q === "USA") return "Showing All Listings";
 
     return q
       .split(" ")
@@ -124,9 +125,13 @@ export default function Home() {
               type="text"
               placeholder="Enter zip code or city"
               className="w-full border-2 border-gray-700 bg-white px-3 py-2 outline-none transition-colors rounded-sm"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.currentTarget.value)}
               onKeyDown={(e) => {
                 if(e.key === "Enter"){
-                  setQueryText(e.currentTarget.value);
+                  const next = (searchInput || "").trim();
+                  setQueryText(next.length ? next : "USA");
+                  setSearchInput("");
                 }
               }}
             />
@@ -180,7 +185,7 @@ export default function Home() {
             {queryText && queryText.toUpperCase() !== "USA" && (
               <div className="p-4">
                 <button
-                  onClick={() => setQueryText("USA")}
+                  onClick={() => { setQueryText("USA"); setSearchInput(""); }}
                   className="w-full border-2 border-gray-700 bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer rounded-sm"
                 >
                   Show All Listings
