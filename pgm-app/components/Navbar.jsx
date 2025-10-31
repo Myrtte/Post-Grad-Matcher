@@ -16,7 +16,7 @@ export default function Navbar ({ selectedPage }) {
         <div className="flex items-center gap-4">
           {/* PGM Logo box */}
           <div className="border-2 border-gray-700 bg-white px-3 py-1 rounded-sm">
-            <h1 className="text-3xl font-black tracking-tight">PGM</h1>
+            <h1 className="text-3xl font-black tracking-tight">Post-Grad Matcher</h1>
           </div>
           
           {/* Small icon */}
